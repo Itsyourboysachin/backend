@@ -5,7 +5,6 @@ const randomstring = require("randomstring");
 var jwt = require("jsonwebtoken");
 const { sendEmail, sendVerifyEmail } = require("../../config/email.config");
 
-// Validation functions
 const validatePassword = (password) => {
   const errors = [];
 
@@ -54,25 +53,22 @@ const signup = async (req, res) => {
   try {
     const { name, email, phoneNumber, password, role } = req.body;
 
-    if (!(email && password && role)) {
+    if (!(name && email && password)) {
       return res
         .status(400)
         .json({ message: `All fields are required`, status: 400 });
     }
 
-    // Validate email
     const emailError = validateEmail(email);
     if (emailError) {
       return res.status(400).json({ message: emailError, status: 400 });
     }
 
-    // Validate phone
     const phoneError = validatePhone(phoneNumber);
     if (phoneError) {
       return res.status(400).json({ message: phoneError, status: 400 });
     }
 
-    // Validate password
     const passwordErrors = validatePassword(password);
     if (passwordErrors) {
       return res
@@ -97,7 +93,7 @@ const signup = async (req, res) => {
 
     await newUser.save();
 
-    sendVerifyEmail(newUser.name, email, newUser._id);
+    sendVerifyEmail(name, email, newUser._id);
 
     return res.status(200).json({
       message: "User registered successfully. Please verify your email!",
@@ -110,9 +106,7 @@ const signup = async (req, res) => {
 
 const signin = async (req, res) => {
   try {
-    const user = await userModel.findOne({
-      email: req.body.email,
-    });
+    const user = await userModel.findOne({ email: req.body.email });
     if (!user) {
       return res.status(404).json({ message: "User Not found.", status: 404 });
     }
@@ -126,10 +120,10 @@ const signin = async (req, res) => {
       });
     }
 
-    var token = jwt.sign({ id: user._id }, config.secret, {
-      expiresIn: 86400, // 24 hours
-    });
-    await userModel.findByIdAndUpdate({ _id: user._id }, { token: token });
+    var token = jwt.sign({ id: user._id }, config.secret, { expiresIn: 86400 }); // 24 hours
+
+    await userModel.findByIdAndUpdate(user._id, { token: token });
+
     return res.status(200).json({
       _id: user._id,
       name: user.name,
@@ -144,6 +138,13 @@ const signin = async (req, res) => {
 
 const update = async (req, res) => {
   try {
+    // Handle file upload
+    if (req.file) {
+      const file = req.file;
+      const filePath = `/uploads/${file.filename}`;
+      req.body.profilePhoto = filePath; // update profilePhoto field with uploaded file path
+    }
+
     delete req.body.password;
     const result = await userModel.findByIdAndUpdate(
       { _id: req.body._id || req.body.id },
@@ -211,7 +212,6 @@ const reset_password = async (req, res) => {
         massage: "User password has been reset successfully",
         data: UserData,
       });
-      // }
     } else {
       res.status(200).send({
         success: false,
@@ -225,9 +225,8 @@ const reset_password = async (req, res) => {
 
 const sendResetPasswordMail = async (name, email, token) => {
   try {
-    // https://salescrm247.s3.amazonaws.com/scripts/login_image.jpg
-    const html = `<p> Hiii ${name} please copy the link <a href="https://abc.com/reset-password?token=${token}"> reset your password </a>.`;
-    const sent = await sendEmail(email, "For Reset password", html);
+    const html = `<p> Hi ${name}, please copy the link <a href="https://abc.com/reset-password?token=${token}"> reset your password </a>.</p>`;
+    await sendEmail(email, "For Reset password", html);
   } catch (error) {
     return res.status(500).json({ message: error.message, status: 500 });
   }
@@ -239,25 +238,26 @@ const forgotPassword = async (req, res) => {
     const userData = await userModel.findOne({ email: email });
     if (userData) {
       const randomString = randomstring.generate();
-      const data = await userModel.updateOne(
+      await userModel.updateOne(
         { email: email },
         { $set: { token: randomString } }
       );
       sendResetPasswordMail(userData.name, userData.email, randomString);
       res.status(200).send({
         success: true,
-        massage: "Please Check your inbox and reset your password",
+        massage: "Please check your inbox and reset your password",
       });
     } else {
       res.status(200).send({
         success: true,
-        massage: "this email does not exist",
+        massage: "This email does not exist",
       });
     }
   } catch (error) {
     return res.status(500).json({ message: error.message, status: 500 });
   }
 };
+
 const verifymail = async (req, res) => {
   try {
     const verifiedMail = await userModel.updateOne(
@@ -269,13 +269,14 @@ const verifymail = async (req, res) => {
     console.log(error.message);
   }
 };
+
 module.exports = {
   signup,
+  signin,
   update,
   deleteById,
   findById,
   findAll,
-  signin,
   reset_password,
   forgotPassword,
   verifymail,

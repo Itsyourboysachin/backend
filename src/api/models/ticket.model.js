@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const user = require("./users.model");
 const ticket = mongoose.model(
   "ticket",
   new mongoose.Schema(

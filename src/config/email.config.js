@@ -4,7 +4,7 @@ const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: "test356sales@gmail.com",
-    pass: process.env.MAIL_PASS,
+    pass: "ajjvnbfwmbrwbibg",
   },
 });
 
@@ -30,18 +30,13 @@ async function sendEmail(to, subject, html) {
 }
 
 async function sendVerifyEmail(name, email, id) {
-  console.log(name, email, id);
   try {
     const mailOptions = {
       from: "test356sales@gmail.com",
       to: email,
       subject: "for Verification mail",
-      html:
-        "<p>Hii" +
-        name +
-        ', please click here to <a href="http://loclhost:3000/verify?id= ' +
-        id +
-        '">Verify</a>your mail</p>',
+      html: `<p>Hi ${name},</p>
+      <p>Please click here to <a href="http://localhost:3000/verify?id=${id}">verify your email</a>.</p>`,
     };
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {

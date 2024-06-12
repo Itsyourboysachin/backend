@@ -19,12 +19,12 @@ const upload = multer({
 });
 module.exports = function (app) {
   app.post(
-    "/api/users/create-ticket",
+    "/api/tickets/create-ticket",
     upload.array("attachments", 10),
     createTicket
   );
   app.post(
-    "/api/users/update-ticket",
+    "/api/tickets/update-ticket",
     upload.array("attachments", 10),
     updateTicket
   );

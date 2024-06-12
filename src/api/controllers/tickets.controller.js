@@ -1,5 +1,5 @@
 const ticket = require("../models/ticket.model");
-
+const user = require("../models/users.model");
 // Create a new ticket
 const createTicket = async (req, res) => {
   try {

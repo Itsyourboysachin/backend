@@ -6,6 +6,7 @@ const user = mongoose.model(
     {
       name: {
         type: String,
+        required: true,
       },
       email: {
         type: String,
@@ -18,12 +19,15 @@ const user = mongoose.model(
       },
       role: {
         type: String,
-        required: true,
         enum: ["customer", "user", "admin", "superAdmin"],
       },
       status: {
         type: Boolean,
         default: true,
+      },
+      profilePhoto: {
+        data: Buffer,
+        Type: String,
       },
       token: {
         type: String,

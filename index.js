@@ -16,6 +16,10 @@ app.use(bodyParser.json({ limit: "50mb" }));
 require("./src/api/routes/users.route.js")(app);
 require("./src/api/routes/tickets.route.js")(app);
 require("./src/api/routes/changePassword.route.js")(app);
+require("./src/api/routes/feedback.route.js")(app);
+require("./src/api/routes/faq.route.js")(app);
+require("./src/api/routes/endUserRoutes/endUserTicket.routes.js")(app);
+require("./src/api/routes/endUserRoutes/endUserRoute.js")(app);
 
 let port = process.env.PORT || 7007;
 app.listen(port, () => {
