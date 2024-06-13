@@ -5,6 +5,7 @@ const {
   UpdateTicket,
   deleteTicket,
   searchTickets,
+  ticketFeedback,
 } = require("../../controllers/endUserTickets");
 const multer = require("multer");
 const { GridFsStorage } = require("multer-gridfs-storage");
@@ -39,5 +40,6 @@ module.exports = function (app) {
     upload.array("attachments", 10),
     UpdateTicket
   );
+  app.put("/api/end-user/submit-feedback", ticketFeedback);
   app.delete("/api/end-user/delete-ticket", deleteTicket);
 };

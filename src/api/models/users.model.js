@@ -17,6 +17,9 @@ const user = mongoose.model(
         type: String,
         required: true,
       },
+      address: {
+        type: String,
+      },
       role: {
         type: String,
         enum: ["customer", "user", "admin", "superAdmin"],

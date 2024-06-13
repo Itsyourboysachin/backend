@@ -18,8 +18,8 @@ require("./src/api/routes/tickets.route.js")(app);
 require("./src/api/routes/changePassword.route.js")(app);
 require("./src/api/routes/feedback.route.js")(app);
 require("./src/api/routes/faq.route.js")(app);
-require("./src/api/routes/endUserRoutes/endUserTicket.routes.js")(app);
 require("./src/api/routes/endUserRoutes/endUserRoute.js")(app);
+require("./src/api/routes/endUserRoutes/endUserTicket.routes.js")(app);
 
 let port = process.env.PORT || 7007;
 app.listen(port, () => {

@@ -82,4 +82,27 @@ const deleteFaq = async (req, res) => {
   }
 };
 
-module.exports = { createFaq, getAllFaq, getFaq, updateFaq, deleteFaq };
+// Search FAQ by Keywords
+const searchFaq = async (req, res) => {
+  try {
+    const keyword = req.body.keyword;
+    const faqs = await Faq.find({
+      $or: [
+        { question: { $regex: keyword, $options: "i" } },
+        { answer: { $regex: keyword, $options: "i" } },
+      ],
+    }).exec();
+    res.send(faqs);
+  } catch (error) {
+    res.status(400).send({ message: "Error searching FAQs" });
+  }
+};
+
+module.exports = {
+  createFaq,
+  getAllFaq,
+  getFaq,
+  updateFaq,
+  deleteFaq,
+  searchFaq,
+};

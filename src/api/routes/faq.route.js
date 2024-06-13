@@ -4,6 +4,7 @@ const {
   getFaq,
   updateFaq,
   deleteFaq,
+  searchFaq,
 } = require("../controllers/faq.controller");
 
 const multer = require("multer");
@@ -23,5 +24,6 @@ module.exports = function (app) {
   app.put("/api/faq/update", upload.array("attachments", 12), updateFaq);
   app.get("/api/faq/find-by-id", getFaq);
   app.get("/api/faq/find-all", getAllFaq);
+  app.get("/api/end-users/get-faq", searchFaq);
   app.delete("/api/faq/delete", deleteFaq);
 };

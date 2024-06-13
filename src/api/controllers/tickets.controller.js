@@ -12,7 +12,6 @@ const createTicket = async (req, res) => {
       customerId,
       assignedTo,
       comments,
-      parentId,
     } = req.body;
     const attachments = req.files.map((file) => ({
       filename: file.originalname,
@@ -30,7 +29,6 @@ const createTicket = async (req, res) => {
       customerId,
       assignedTo,
       comments,
-      parentId,
     });
 
     await newTicket.save();

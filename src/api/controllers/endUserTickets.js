@@ -1,6 +1,6 @@
 const CustomerSupportTicket = require("../models/endUserTickets.model");
 const User = require("../models/users.model");
-
+const { sendStatusChangeEmail } = require("../../config/email.config");
 // Create a new ticket
 const createTicket = async (req, res) => {
   try {
@@ -42,7 +42,8 @@ const getAllTickets = async (req, res) => {
   try {
     const tickets = await CustomerSupportTicket.find().populate(
       "fullName",
-      "email mobileNo"
+      "email",
+      "mobileNo"
     );
     res.json(tickets);
   } catch (error) {
@@ -72,34 +73,67 @@ const getSingleTicket = async (req, res) => {
 // Update a ticket
 const UpdateTicket = async (req, res) => {
   try {
-    const ticket = await CustomerSupportTicket.findById(req.params.id);
+    const ticket = await CustomerSupportTicket.findById(req.body.id);
     if (!ticket) {
       return res.status(404).json({ error: "Ticket not found" });
     }
 
-    ticket.customerType = req.body.customerType;
-    ticket.topic = req.body.topic;
-    ticket.subTopic = req.body.subTopic;
+    ticket.customerType =
+      req.body.customerType == undefined
+        ? ticket.customerType
+        : req.body.customerType;
+    ticket.topic = req.body.topic == undefined ? ticket.topic : req.body.topic;
+    ticket.subTopic =
+      req.body.subTopic == undefined ? ticket.subTopic : req.body.subTopic;
     ticket.alternativeEmail = req.body.alternativeEmail;
     ticket.alternativeMobileNo = req.body.alternativeMobileNo;
     ticket.imeiNo1 = req.body.imeiNo1;
     ticket.imeiNo2 = req.body.imeiNo2;
-    ticket.chooseProduct = req.body.chooseProduct;
-    ticket.ticketTitle = req.body.ticketTitle;
-    ticket.ticketDescription = req.body.ticketDescription;
-    ticket.category = req.body.category;
+    ticket.chooseProduct =
+      req.body.chooseProduct == undefined
+        ? ticket.chooseProduct
+        : req.body.chooseProduct;
+    ticket.ticketTitle =
+      req.body.ticketTitle == undefined
+        ? ticket.ticketTitle
+        : req.body.ticketTitle;
+    ticket.ticketDescription =
+      req.body.ticketDescription == undefined
+        ? ticket.ticketDescription
+        : req.body.ticketDescription;
+    ticket.category =
+      req.body.category == undefined ? ticket.category : req.body.category;
     ticket.status = req.body.status;
     ticket.comments = req.body.comments;
 
     if (req.files) {
       ticket.attachments = req.files.map((file) => file.filename);
     }
-
     await ticket.save();
+
+    if (CustomerSupportTicket.status !== ticket.status) {
+      // Send an email to the user about the status change
+      await sendStatusChangeEmail(ticket);
+    }
     res.json({ message: "Ticket updated successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error updating ticket" });
+  }
+};
+const ticketFeedback = async (req, res) => {
+  try {
+    const ticket = await CustomerSupportTicket.findById(req.params.id);
+    if (!ticket) {
+      return res.status(404).json({ error: "Ticket not found" });
+    }
+    ticket.feedback = req.body.feedback;
+    ticket.rating = req.body.rating;
+    await ticket.save();
+    res.json({ message: "Feedback Send successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error Feedback failed" });
   }
 };
 
@@ -160,4 +194,5 @@ module.exports = {
   UpdateTicket,
   deleteTicket,
   searchTickets,
+  ticketFeedback,
 };

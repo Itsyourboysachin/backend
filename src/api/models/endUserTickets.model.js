@@ -76,6 +76,16 @@ const CustomerSupportTicket = mongoose.model(
       },
       status: {
         type: String,
+        default: "Open",
+      },
+      feedback: {
+        type: String,
+      },
+      rating: {
+        type: String,
+      },
+      priority: {
+        type: String,
       },
       parentId: mongoose.Types.ObjectId,
     },

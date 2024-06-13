@@ -3,7 +3,7 @@ const multer = require("multer");
 
 const upload = multer({ dest: "./uploads/" });
 module.exports = function (app) {
-  app.post("/api/users/signup", controller.signup);
+  app.post("/api/users/create", controller.signup);
   app.post("/api/users/signin", controller.signin);
   app.put(
     "/api/users/update",

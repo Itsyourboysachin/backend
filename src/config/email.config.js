@@ -50,4 +50,31 @@ async function sendVerifyEmail(name, email, id) {
   }
 }
 
-module.exports = { sendEmail, sendVerifyEmail };
+const sendStatusChangeEmail = async (ticket) => {
+  try {
+    const mailOptions = {
+      from: "test356sales@gmail.com",
+      to: ticket.email, // assuming customerEmail is a field in the ticket document
+      subject: `Ticket ${ticket._id} status updated to ${ticket.status}`,
+      text: `Dear ${ticket.fullName}, 
+  
+  Your ticket ${ticket._id} has been updated to status ${ticket.status}. Please login to your account to view the updated ticket.
+  
+  Best regards,
+  Your Support Team`,
+    };
+
+    // Send the email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error(error);
+      } else {
+        console.log(`Email sent to ${ticket.email}`);
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+module.exports = { sendEmail, sendVerifyEmail, sendStatusChangeEmail };
