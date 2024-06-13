@@ -40,11 +40,7 @@ const createTicket = async (req, res) => {
 // Get all tickets
 const getAllTickets = async (req, res) => {
   try {
-    const tickets = await CustomerSupportTicket.find().populate(
-      "fullName",
-      "email",
-      "mobileNo"
-    );
+    const tickets = await CustomerSupportTicket.find().exec();
     res.json(tickets);
   } catch (error) {
     console.error(error);
@@ -55,11 +51,7 @@ const getAllTickets = async (req, res) => {
 // Get a single ticket by ID
 const getSingleTicket = async (req, res) => {
   try {
-    const ticket = await CustomerSupportTicket.findById(req.params.id).populate(
-      "fullName",
-      "email",
-      "mobileNo"
-    );
+    const ticket = await CustomerSupportTicket.findById(req.params.id);
     if (!ticket) {
       return res.status(404).json({ error: "Ticket not found" });
     }

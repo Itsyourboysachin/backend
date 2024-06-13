@@ -18,6 +18,7 @@ require("./src/api/routes/tickets.route.js")(app);
 require("./src/api/routes/changePassword.route.js")(app);
 require("./src/api/routes/feedback.route.js")(app);
 require("./src/api/routes/faq.route.js")(app);
+require("./src/api/routes/dashboard.route.js")(app);
 require("./src/api/routes/endUserRoutes/endUserRoute.js")(app);
 require("./src/api/routes/endUserRoutes/endUserTicket.routes.js")(app);
 
